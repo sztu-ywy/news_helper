@@ -1,0 +1,10 @@
+package model
+
+type News struct {
+	Model
+	Title   string `json:"title" gorm:"index"`
+	Content string `json:"content"`
+	Link    string `json:"link"`
+	Source  string `json:"source"`
+	Time    uint64 `json:"time"`
+}

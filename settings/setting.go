@@ -1,40 +1,23 @@
 package settings
 
 import (
-	"log"
+	"strings"
+	"time"
 
-	"gopkg.in/ini.v1"
+	"git.uozi.org/uozi/crypto"
+	"github.com/spf13/cast"
+	"github.com/uozi-tech/cosy/settings"
 )
 
-var cfg *ini.File
+var (
+	buildTime    string
+	LastModified string
+)
 
 func init() {
-	Setup()
-	Register("server", ServerSetting)
-	Register("database", DataBaseSettings)
-	Register("redis", RedisSettings)
-	Register("georegeo", GeoregeoSettings)
-	Register("jwt", JwtSettings)
+	t := time.Unix(cast.ToInt64(buildTime), 0)
+	LastModified = strings.ReplaceAll(t.Format(time.RFC1123), "UTC", "GMT")
 
-}
-
-var err error
-
-func Setup() {
-	cfg, err = ini.Load("app.ini")
-	if err != nil {
-		log.Fatalf("Failed to parse app.ini: %v", err)
-	}
-
-}
-func Register(Name string, v interface{}) {
-	mapTo(Name, v)
-}
-
-// 通用映射方法
-func mapTo(section string, v interface{}) {
-	err := cfg.Section(section).MapTo(v)
-	if err != nil {
-		log.Fatalf("Cfg.MapTo %s err: %v", section, err)
-	}
+	settings.Register("crypto", crypto.Settings)
+	// settings.Register("sls", SLSSettings)
 }

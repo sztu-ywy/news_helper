@@ -15,9 +15,17 @@ var db *gorm.DB
 
 type Model struct {
 	ID        uint64                `gorm:"primary_key" json:"id,string"`
-	CreatedAt uint64                `json:"created_at,omitempty" gorm:"autoCreateTime"`
-	UpdatedAt uint64                `json:"updated_at,omitempty" gorm:"autoUpdateTime"`
+	CreatedAt uint64                `json:"created_at,omitempty" gorm:"autoCreateTime" cosy:"list:between"`
+	UpdatedAt uint64                `json:"updated_at,omitempty" gorm:"autoUpdateTime" cosy:"list:between"`
 	DeletedAt soft_delete.DeletedAt `json:"deleted_at,omitempty" gorm:"index;default:0"`
+}
+
+// main.go执行了GenerateAllModel进行自动迁移，还要在GenerateAllModel()中注册
+func GenerateAllModel() []any {
+	return []any{
+		User{},
+		UserGroup{},
+	}
 }
 
 func Use(tx *gorm.DB) {

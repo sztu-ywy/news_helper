@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/uozi-tech/cosy/logger"
-	"gorm.io/gorm"
-
 	"news_helper/internal/acl"
 	"news_helper/internal/helper"
+
+	"github.com/uozi-tech/cosy/logger"
 	"github.com/uozi-tech/cosy/redis"
+	"gorm.io/gorm"
 )
 
 const (
@@ -19,20 +19,15 @@ const (
 
 type User struct {
 	Model
-	Name             string     `json:"name,omitempty" cosy:"add:required;update:omitempty;list:fussy"`
-	Password         string     `json:"-" cosy:"json:password;add:required;update:omitempty"` // hide password
-	Email            string     `json:"email,omitempty" cosy:"add:required,email;update:omitempty,email;list:fussy" gorm:"type:varchar(255);index"`
-	PhoneLike        []byte     `json:"-" gorm:"type:varbinary(5120);serializer:crypto[sakura]"`
-	Phone            string     `json:"phone" cosy:"all:omitempty;list:fussy[sakura]" gorm:"serializer:crypto;type:varchar(32)" gorm:"index"`
-	AvatarID         uint64     `json:"avatar_id,string,omitempty" cosy:"all:omitempty"`
-	Avatar           *Upload    `json:"avatar,omitempty" gorm:"foreignKey:avatar_id"`
-	LastActive       int64      `json:"last_active,omitempty"`
-	UserGroupID      uint64     `json:"user_group_id,omitempty" cosy:"all:omitempty;list:eq" gorm:"index;default:0"`
-	UserGroup        *UserGroup `json:"user_group,omitempty" cosy:"item:preload;list:preload"`
-	Status           int        `json:"status,omitempty" cosy:"add:omitempty,min=-1,max=1;update:omitempty,min=-1,max=1;list:in" gorm:"default:1"`
-	Memory           string     `json:"memory" cosy:"all:omitempty"`
-	WeChatOpenID     string     `json:"wechat_open_id,omitempty" cosy:"list:eq" gorm:"type:varchar(64);column:wechat_open_id;index"`
-	WeChatSessionKey string     `json:"-"`
+	Name        string     `json:"name,omitempty" cosy:"add:required;update:omitempty;list:fussy"`
+	Password    string     `json:"-" cosy:"json:password;add:required;update:omitempty;delete:omitempty;get:omitempty;"`
+	Email       string     `json:"email,omitempty" cosy:"add:required;update:omitempty;list:fussy" gorm:"type:varchar(255);index"`
+	Phone       string     `json:"phone,omitempty" cosy:"all:omitempty;list:fussy" gorm:"index"`
+	LastActive  int64      `json:"last_active,omitempty"`
+	UserGroupID uint64     `json:"user_group_id,omitempty" cosy:"all:omitempty;list:eq" gorm:"index;default:0"`
+	UserGroup   *UserGroup `json:"user_group,omitempty" cosy:"item:preload;list:preload"`
+	//1是启用，-1是禁用
+	Status int `json:"status,omitempty" cosy:"add:min=-1,max=1;update:omitempty,min=-1,max=1;list:in" gorm:"default:1"`
 }
 
 func (u *User) AfterUpdate(_ *gorm.DB) (err error) {
@@ -56,11 +51,6 @@ func (u *User) UpdateLastActive() (now int64) {
 	key := helper.BuildUserKey(u.ID, "last_active")
 	_ = redis.Set(key, now, 0)
 	return
-}
-
-// Updates User
-func (u *User) Updates(data *User) error {
-	return db.Model(u).Updates(data).Error
 }
 
 // GetUserGroup get user group from cache or db

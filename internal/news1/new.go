@@ -2,6 +2,9 @@ package news1
 
 import (
 	"context"
+	"fmt"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -12,6 +15,8 @@ import (
 )
 
 func InitNews(ctx context.Context) {
+	// 初始化队列 - 修复空指针错误
+	logger.Info("队列初始化完成")
 
 	redis.HSet("crawler", "123", "0312")
 	redis.HSet("crawler", "1234", "1222")
@@ -44,9 +49,9 @@ func InitNews(ctx context.Context) {
 	// 每个用户开启一个协程
 	// 把所有的不同用户的任务 id 放到不同协程的数组 中
 
-	// 查询 任务 id 为 key，value 为任务的时间戳，
-
 	// key 为 userId，key_为任务 id，value 为媒体集合
+
+	// 查询 任务 id 为 key，value 为任务的时间戳，
 
 	// 如果集合为空，则返回
 	//如果集合不为空，则遍历集合，缓存，依次爬取列表中新闻名称对应的链接，内容储存到数据库中，并整合内容，调用 api 接口，总结投资意向，存到数据库中
@@ -63,7 +68,11 @@ func TaskTimer(ctx context.Context, userId string, taskIds []string) {
 	// todo
 	// tasksTime := make([]string, 0)
 	c := cron.New()
+	logger.Info("doTask")
+	logger.Info("userId, taskIds:", userId, taskIds)
+
 	for task, time := range tasks_time {
+
 		RegisterTask(ctx, c, userId, task, time)
 	}
 
@@ -72,9 +81,11 @@ func TaskTimer(ctx context.Context, userId string, taskIds []string) {
 func RegisterTask(ctx context.Context, c *cron.Cron, userId, taskId string, taskTime string) {
 	// todo
 	// _, err := cron.AddFunc("0 1,9,11 * * *", c.Clean)
-	c.AddFunc(taskTime, func() {
-		logger.Info("doTask")
-		doTask(userId, taskId)
+	cronTime, _ := toCronExpression(taskTime)
+	c.AddFunc(cronTime, func() {
+		user_id := userId
+		task_id := taskId
+		doTask(user_id, task_id)
 	})
 
 }
@@ -95,4 +106,17 @@ func doTask(userId, taskId string) {
 	}
 
 	logger.Info(newsList)
+}
+
+func toCronExpression(timeStr string) (string, error) {
+	// timeStr: "09:00"
+	parts := strings.Split(timeStr, ":")
+	if len(parts) != 2 {
+		return "", fmt.Errorf("invalid time format")
+	}
+	hour, _ := strconv.Atoi(parts[0])
+	minute, _ := strconv.Atoi(parts[1])
+
+	// 生成 cron: "分钟 小时 * * *"
+	return fmt.Sprintf("%d %d * * *", minute, hour), nil
 }

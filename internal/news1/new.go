@@ -18,8 +18,6 @@ func InitNews(ctx context.Context) {
 	// 初始化队列 - 修复空指针错误
 	logger.Info("队列初始化完成")
 
-	redis.HSet("crawler", "123", "0312")
-	redis.HSet("crawler", "1234", "1222")
 	time.Sleep(1 * time.Second)
 	logger.Info("InitNews")
 
@@ -44,19 +42,21 @@ func InitNews(ctx context.Context) {
 		}(k, v)
 
 	}
-	//  查询 redis中 key为crawler 的哈希表
-	// 表中key为任务 id，value为用户的 id
-	// 每个用户开启一个协程
-	// 把所有的不同用户的任务 id 放到不同协程的数组 中
+	/*
+		 查询 redis中 key为crawler 的哈希表
+		表中key为任务 id，value为用户的 id
+		每个用户开启一个协程
+		把所有的不同用户的任务 id 放到不同协程的数组 中
 
-	// key 为 userId，key_为任务 id，value 为媒体集合
+		key 为 userId，key_为任务 id，value 为媒体集合
 
-	// 查询 任务 id 为 key，value 为任务的时间戳，
+		查询 任务 id 为 key，value 为任务的时间戳，
 
-	// 如果集合为空，则返回
-	//如果集合不为空，则遍历集合，缓存，依次爬取列表中新闻名称对应的链接，内容储存到数据库中，并整合内容，调用 api 接口，总结投资意向，存到数据库中
+		如果集合为空，则返回
+		如果集合不为空，则遍历集合，缓存，依次爬取列表中新闻名称对应的链接，内容储存到数据库中，并整合内容，调用 api 接口，总结投资意向，存到数据库中
 
-	//搜索数据库，通过邮箱，推送到指定的用户
+		搜索数据库，通过邮箱，推送到指定的用户
+	*/
 
 }
 func TaskTimer(ctx context.Context, userId string, taskIds []string) {

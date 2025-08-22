@@ -25,6 +25,10 @@ func GenerateAllModel() []any {
 	return []any{
 		User{},
 		UserGroup{},
+		Upload{},
+		Task{},  // 添加 Task 模型注册
+		Media{}, // 添加 Media 模型注册
+		News{},  // 添加 News 模型注册
 	}
 }
 

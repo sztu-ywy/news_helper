@@ -3,6 +3,7 @@ package queue
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/bsm/redislock"
@@ -100,9 +101,16 @@ func (q *Queue[T]) Unlock() error {
 
 // Produce send data to the queue
 func (q *Queue[T]) Produce(data *T) error {
+	if q == nil {
+		return fmt.Errorf("queue is nil")
+	}
+	if data == nil {
+		return fmt.Errorf("data is nil")
+	}
+
 	bytes, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("json marshal error: %v", err)
 	}
 	return q.produce(string(bytes))
 }

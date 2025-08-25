@@ -20,4 +20,6 @@ func init() {
 
 	settings.Register("crypto", crypto.Settings)
 	// settings.Register("sls", SLSSettings)
+	settings.Register("email", EmailSettings)
+	settings.Register("qwen", QwenSettings)
 }

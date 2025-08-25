@@ -30,6 +30,8 @@ func GenerateAllModel() []any {
 		Media{},          // 添加 Media 模型注册
 		News{},           // 添加 News 模型注册
 		AnalysisResult{}, // 添加 AnalysisResult 模型注册
+		Agent{},          // 添加 Agent 模型注册
+		
 	}
 }
 

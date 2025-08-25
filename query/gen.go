@@ -16,39 +16,64 @@ import (
 )
 
 var (
-	Q         = new(Query)
-	User      *user
-	UserGroup *userGroup
+	Q              = new(Query)
+	AnalysisResult *analysisResult
+	Media          *media
+	News           *news
+	Task           *task
+	Upload         *upload
+	User           *user
+	UserGroup      *userGroup
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	AnalysisResult = &Q.AnalysisResult
+	Media = &Q.Media
+	News = &Q.News
+	Task = &Q.Task
+	Upload = &Q.Upload
 	User = &Q.User
 	UserGroup = &Q.UserGroup
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:        db,
-		User:      newUser(db, opts...),
-		UserGroup: newUserGroup(db, opts...),
+		db:             db,
+		AnalysisResult: newAnalysisResult(db, opts...),
+		Media:          newMedia(db, opts...),
+		News:           newNews(db, opts...),
+		Task:           newTask(db, opts...),
+		Upload:         newUpload(db, opts...),
+		User:           newUser(db, opts...),
+		UserGroup:      newUserGroup(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	User      user
-	UserGroup userGroup
+	AnalysisResult analysisResult
+	Media          media
+	News           news
+	Task           task
+	Upload         upload
+	User           user
+	UserGroup      userGroup
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:        db,
-		User:      q.User.clone(db),
-		UserGroup: q.UserGroup.clone(db),
+		db:             db,
+		AnalysisResult: q.AnalysisResult.clone(db),
+		Media:          q.Media.clone(db),
+		News:           q.News.clone(db),
+		Task:           q.Task.clone(db),
+		Upload:         q.Upload.clone(db),
+		User:           q.User.clone(db),
+		UserGroup:      q.UserGroup.clone(db),
 	}
 }
 
@@ -62,21 +87,36 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:        db,
-		User:      q.User.replaceDB(db),
-		UserGroup: q.UserGroup.replaceDB(db),
+		db:             db,
+		AnalysisResult: q.AnalysisResult.replaceDB(db),
+		Media:          q.Media.replaceDB(db),
+		News:           q.News.replaceDB(db),
+		Task:           q.Task.replaceDB(db),
+		Upload:         q.Upload.replaceDB(db),
+		User:           q.User.replaceDB(db),
+		UserGroup:      q.UserGroup.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	User      *userDo
-	UserGroup *userGroupDo
+	AnalysisResult *analysisResultDo
+	Media          *mediaDo
+	News           *newsDo
+	Task           *taskDo
+	Upload         *uploadDo
+	User           *userDo
+	UserGroup      *userGroupDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		User:      q.User.WithContext(ctx),
-		UserGroup: q.UserGroup.WithContext(ctx),
+		AnalysisResult: q.AnalysisResult.WithContext(ctx),
+		Media:          q.Media.WithContext(ctx),
+		News:           q.News.WithContext(ctx),
+		Task:           q.Task.WithContext(ctx),
+		Upload:         q.Upload.WithContext(ctx),
+		User:           q.User.WithContext(ctx),
+		UserGroup:      q.UserGroup.WithContext(ctx),
 	}
 }
 

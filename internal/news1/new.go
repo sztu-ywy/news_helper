@@ -2,13 +2,8 @@ package news1
 
 import (
 	"context"
-	"fmt"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
-
-	"github.com/robfig/cron"
 
 	"github.com/uozi-tech/cosy/logger"
 	"github.com/uozi-tech/cosy/redis"
@@ -20,7 +15,6 @@ func InitNews(ctx context.Context) {
 
 	time.Sleep(1 * time.Second)
 	logger.Info("InitNews")
-
 	hashMap, err := redis.HGetAll("crawler")
 	if err != nil {
 		logger.Error("HGetAll", err)
@@ -58,65 +52,4 @@ func InitNews(ctx context.Context) {
 		搜索数据库，通过邮箱，推送到指定的用户
 	*/
 
-}
-func TaskTimer(ctx context.Context, userId string, taskIds []string) {
-	tasks_time, err := redis.HGetAll(userId)
-	if err != nil {
-		logger.Error("HGetAll", err)
-		return
-	}
-	// todo
-	// tasksTime := make([]string, 0)
-	c := cron.New()
-	logger.Info("doTask")
-	logger.Info("userId, taskIds:", userId, taskIds)
-
-	for task, time := range tasks_time {
-
-		RegisterTask(ctx, c, userId, task, time)
-	}
-
-}
-
-func RegisterTask(ctx context.Context, c *cron.Cron, userId, taskId string, taskTime string) {
-	// todo
-	// _, err := cron.AddFunc("0 1,9,11 * * *", c.Clean)
-	cronTime, _ := toCronExpression(taskTime)
-	c.AddFunc(cronTime, func() {
-		user_id := userId
-		task_id := taskId
-		doTask(user_id, task_id)
-	})
-
-}
-
-func doTask(userId, taskId string) {
-	// todo
-	newsList, err := redis.Get(taskId)
-	if err != nil {
-		logger.Error("Get", err)
-		return
-	}
-	for _, news := range newsList {
-		logger.Info(news)
-		// todo
-		// 爬取新闻内容
-		// 调用 api 接口，总结投资意向
-		// 存到数据库中
-	}
-
-	logger.Info(newsList)
-}
-
-func toCronExpression(timeStr string) (string, error) {
-	// timeStr: "09:00"
-	parts := strings.Split(timeStr, ":")
-	if len(parts) != 2 {
-		return "", fmt.Errorf("invalid time format")
-	}
-	hour, _ := strconv.Atoi(parts[0])
-	minute, _ := strconv.Atoi(parts[1])
-
-	// 生成 cron: "分钟 小时 * * *"
-	return fmt.Sprintf("%d %d * * *", minute, hour), nil
 }

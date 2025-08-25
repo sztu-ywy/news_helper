@@ -6,11 +6,12 @@ import (
 	"news_helper/internal/audit"
 	"news_helper/internal/limiter"
 	"news_helper/internal/news1"
+	"news_helper/model"
 
-	"git.uozi.org/uozi/burn-api/model"
-	"git.uozi.org/uozi/burn-api/model/view"
-	"git.uozi.org/uozi/burn-api/query"
-	"git.uozi.org/uozi/burn-api/router"
+	"news_helper/model/view"
+	"news_helper/query"
+	"news_helper/router"
+
 	"github.com/uozi-tech/cosy"
 	mysql "github.com/uozi-tech/cosy-driver-mysql"
 	"github.com/uozi-tech/cosy/settings"
@@ -42,13 +43,15 @@ func main() {
 		limiter.Init()
 	},
 		// 初始化运行时配置，初始化路由
-		model.InitRuntimeSettings,
+		// model.InitRuntimeSettings,
 		router.InitRouter,
 	)
 	// 注册后台运行函数，用于异步运行收集日志和监控
 	cosy.RegisterGoroutine(
 		audit.Init,
 		news1.InitNews,
+		news1.InitQueue, // InitQueue 现在接受 context 参数，会在 cosy 框架中自动传递
+
 	)
 
 	// cosy启动

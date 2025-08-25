@@ -24,7 +24,7 @@ func InitNews(ctx context.Context) {
 	for k, v := range hashMap {
 		userTaskMap[v] = append(userTaskMap[v], k)
 	}
-
+	
 	var wg sync.WaitGroup
 	for k, v := range userTaskMap {
 		logger.Info(k, v)

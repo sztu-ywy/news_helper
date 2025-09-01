@@ -6,6 +6,7 @@ require (
 	git.uozi.org/uozi/burn-api v0.0.0-20250808081953-7274c130cb24
 	git.uozi.org/uozi/crypto v1.5.0
 	git.uozi.org/uozi/rate-limiter-go v0.0.6
+	github.com/PuerkitoBio/goquery v1.10.3
 	github.com/aliyun/aliyun-log-go-sdk v0.1.107
 	github.com/bsm/redislock v0.9.4
 	github.com/gin-gonic/gin v1.10.1
@@ -41,7 +42,7 @@ require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
-	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.14.0 // indirect
